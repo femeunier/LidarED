@@ -4,8 +4,10 @@ library(ggplot2)
 library(dplyr)
 library(minpack.lm)
 library(propagate)
+library(investr)
 
-data.file <- "../data/Wytham_trees_summary_ED2.csv"
+# Load data
+data.file <- "./data/Wytham_trees_summary_ED2.csv"
 data.wytham <- read.csv(data.file,header = TRUE)
 
 data.wytham <- data.wytham %>% rename(x =  stemlocx_.m.,

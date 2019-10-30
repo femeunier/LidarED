@@ -7,6 +7,5 @@
 
 
 extremum <- function(vector){
-
   return(c(min(vector,na.rm = TRUE),max(vector,na.rm = TRUE)))
 }
