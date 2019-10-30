@@ -28,4 +28,6 @@ patchnumber_from_position <- function(x,y,patch_X,patch_Y){
       compt <- compt + 1
     }
   }
+
+  return(patch)
 }
