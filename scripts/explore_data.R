@@ -5,7 +5,7 @@ library(dplyr)
 library(minpack.lm)
 library(propagate)
 
-data.file <- "/home/femeunier/Documents/projects/Hackaton/data/Wytham_trees_summary_ED2.csv"
+data.file <- "../data/Wytham_trees_summary_ED2.csv"
 data.wytham <- read.csv(data.file,header = TRUE)
 
 data.wytham <- data.wytham %>% rename(x =  stemlocx_.m.,
