@@ -18,19 +18,23 @@ data.wytham <- data.wytham %>% rename(x =  stemlocx_.m.,
                                       CA = VerticalCrownProjectedArea_pts_.m2.,
                                       AGV_m = Vol_QSM_avg_.m3.,
                                       AGV_sd = Vol_QSM_sd_.m3.,
+                                      scientific = species,
                                       dbh_census = DBH_census_.m.) %>% mutate(dbh_tls = 100*dbh_tls,
                                                                               dbh_census = 100*dbh_census) %>%
-  dplyr::select(c(x,y,dbh_tls,h,CA,AGV_m,dbh_census))
+  dplyr::select(c(x,y,dbh_tls,h,CA,AGV_m,dbh_census,scientific))
 
 extr_x <- extremum(data.wytham[["x"]])
 extr_y <- extremum(data.wytham[["y"]])
 patch_X <- 20
 patch_Y <- 20
 
-data.wytham[["patch"]] <- patchnumber_from_position(data.wytham[["x"]],data.wytham[["y"]],patch_X,patch_Y)
+data.wytham[["plots"]] <- patchnumber_from_position(data.wytham[["x"]],data.wytham[["y"]],patch_X,patch_Y)
+data.wytham[["tag"]]  <- 1:nrow(data.wytham)
+data.wytham[["wood.dens"]]  <- 0.6 # eventually use GWWDD
+
 
 ggplot(data.wytham,
-       aes(x = x-extr_x[1], y = y-extr_y[1], color = as.factor(patch),size = dbh_census)) +
+       aes(x = x-extr_x[1], y = y-extr_y[1], color = as.factor(plots),size = dbh_census)) +
   geom_point(alpha = 0.5) +
   xlab("x (m)") +
   ylab("y (m)") +
@@ -39,3 +43,5 @@ ggplot(data.wytham,
   theme_bw() +
   theme(legend.position = "none")
 
+data.wytham_fin <- data.wytham %>% dplyr::select(c(plots,tag,scientific,wood.dens,dbh_tls)) %>% rename(dbh = dbh_tls)
+write.csv(data.wytham_fin,file = "./data/Wytham_census_formatted.csv")
