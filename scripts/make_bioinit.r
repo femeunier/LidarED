@@ -21,6 +21,8 @@ gc()
 graphics.off()
 #------------------------------------------------------------------------------------------#
 
+detach("package:LidarED", unload=TRUE)
+
 IED_INIT_MODE = 6 # ED2 input file 3 or 6
 
 #==========================================================================================#
@@ -37,9 +39,9 @@ IED_INIT_MODE = 6 # ED2 input file 3 or 6
 #------------------------------------------------------------------------------------------#
 #     Set paths.                                                                           #
 #------------------------------------------------------------------------------------------#
-here    =  "/home/femeunier/Documents/R/ED2_Support_Files/pss+css_processing"              # Current path
-there   = '/home/femeunier/Documents/data/paracou/' # Census path
-outpath = file.path(here,"sites") # Path where the output should be written
+here    = file.path(getwd(),"scripts")             # Current path
+there   = file.path(here,"../data") # Census path
+outpath = file.path(here,"../data") # Path where the output should be written
 #------------------------------------------------------------------------------------------#
 
 setwd(here)
@@ -47,13 +49,13 @@ setwd(here)
 #------------------------------------------------------------------------------------------#
 #     Location of interest.                                                                #
 #------------------------------------------------------------------------------------------#
-place      = "paracou"   # Name of the site, for output directory
-census.csv = "census_Paracou_all_extrapolated.csv"  # Name of the csv file with the forest inventory data
-iata       = "paracou"             # Tag for site (short name for output files)
-identity   = "PFT_mid"         # Unique identification (in case you have multiple tests).
-lon        = -53           # Longitude of the site
-lat        =  5           # Latitude of the site
-year.out   = 2000              # Year of measurements
+place      = "Wytham"   # Name of the site, for output directory
+census.csv = "Wytham_census_formatted.csv"  # Name of the csv file with the forest inventory data
+iata       = "Wytham"             # Tag for site (short name for output files)
+identity   = ""         # Unique identification (in case you have multiple tests).
+lon        = -1.34      # Longitude of the site
+lat        =  51.78     # Latitude of the site
+year.out   = 2012       # Year of measurements
 #------------------------------------------------------------------------------------------#
 
 
@@ -61,14 +63,12 @@ year.out   = 2000              # Year of measurements
 #------------------------------------------------------------------------------------------#
 #     Plot information.                                                                    #
 #------------------------------------------------------------------------------------------#
-subplot.area    = 70*70   # Area of each subplot (all trees) [m2]
-allplot.area    = 70*70   # Area of each plot    (all large trees) [m2]
-nplots          = 10     # Number of plots
-min.dbh.subplot = 10.     # Minimum DBH in the sub-sample
-min.dbh.allplot = 10.     # Minimum DBH for all plot
-min.dbh.subplot_L = 1.   # Liana minimum DBH in the sub-sample
-min.dbh.allplot_L = 1.   # Liana minimum DBH in the sub-sample
-consider_liana = TRUE
+subplot.area    = 20*20   # Area of each subplot (all trees) [m2]
+allplot.area    = 20*20   # Area of each plot    (all large trees) [m2]
+nplots          = 40     # Number of plots
+min.dbh.subplot = 2.     # Minimum DBH in the sub-sample
+min.dbh.allplot = 2.     # Minimum DBH for all plot
+
 #------------------------------------------------------------------------------------------#
 
 
@@ -169,38 +169,10 @@ ncohorts  = nrow(census)
 #------------------------------------------------------------------------------------------#
 pft.mid.rho = pft$rho[pft.idx]
 npft        = length(pft.mid.rho)
-#pft.brks    = c(-Inf,0.5*(pft.mid.rho[-1]+pft.mid.rho[-npft]),Inf)
-#pft.brks    = c(-Inf,(pft.mid.rho[-npft]),Inf)
-pft.brks    = c(-Inf,c(0),Inf)
+pft.brks    = c(-Inf,0.5*(pft.mid.rho[-1]+pft.mid.rho[-npft]),Inf)
+# pft.brks    = c(-Inf,(pft.mid.rho[-npft]),Inf)
 pft.cut     = as.numeric(cut(census$wood.dens,pft.brks))
 census$pft  = pft.idx[pft.cut]
-
-if ("is_liana" %in% colnames(census)){
-  if (consider_liana){
-    census$pft[census$is_liana]=17
-    census$keep <- TRUE
-    plots_uni <- unique(census$plots)
-    nplots_tot <- length(plots_uni)
-    for (i in seq(nplots_tot)){
-      if (all(census$pft[census$plots==plots_uni[i]] == 17)){
-        census$keep[census$plots==plots_uni[i]] <- FALSE
-      }
-    }
-  } else {
-    census$keep <- TRUE
-    census$keep[census$is_liana]=FALSE
-    plots_uni <- unique(census$plots)
-    nplots_tot <- length(plots_uni)
-    for (i in seq(nplots_tot)){
-      if (all(census$pft[census$plots==plots_uni[i]] == 17)){
-        census$keep[census$plots==plots_uni[i]] <- FALSE
-      }
-    }
-
-  }
-  census <- census[census$keep,]
-  ncohorts <- nrow(census)
-}
 
 #------------------------------------------------------------------------------------------#
 
@@ -210,9 +182,6 @@ if ("is_liana" %in% colnames(census)){
 #------------------------------------------------------------------------------------------#
 census$n = with(census, ifelse(dbh < min.dbh.allplot,1/subplot.area,1/allplot.area))
 
-if ("is_liana" %in% colnames(census)){
-  census$n[census$is_liana] =  with(census, ifelse(dbh[census$is_liana] < min.dbh.allplot_L,1/subplot.area,1/allplot.area))
-}
 #------------------------------------------------------------------------------------------#
 
 
@@ -225,32 +194,6 @@ census$balive = with(census,size2ba (dbh=dbh,hgt=height,ipft=pft))
 census$bdead  = with(census,size2bd (dbh=dbh,hgt=height,ipft=pft))
 census$lai    = with(census,size2lai(dbh=dbh,hgt=height,nplant=n,ipft=pft))
 #------------------------------------------------------------------------------------------#
-
-if ("is_liana" %in% colnames(census)){
-  allom=iallom
-  source('~/Documents/R/review_paper/allometry/allom_ed.r')
-  source('~/Documents/R/review_paper/allometry/allom_ed_param.r')
-  is_liana=census$is_liana
-
-
-  census$height[is_liana] = sapply(census$dbh[is_liana],function(dbh) dbh2h(dbh,pft,allom,17))
-
-  if (consider_liana){
-    plot_uni=sort(unique(census$plots))
-    dbh_ths_L=2. # cm
-    delta_z_L=0.2 # m
-    for (i in seq(1,length(plot_uni))){
-      pos = census$plots == plot_uni[i]
-
-      if (any(pos & !census$is_liana)){
-        tree_max_height = max(census$height[pos & !census$is_liana]) # Tree maximal height in this patch
-        census$height[census$is_liana & pos & census$dbh > dbh_ths_L] = min(tree_max_height+delta_z_L,pft$hgt.max[17])
-      }
-    }
-  }
-}
-
-
 
 
 
@@ -374,48 +317,5 @@ cat (" + Create PSS/CSS file.","\n")
    box()
 
    plot.new()
-   hist(census$wood.dens,xlab=TeX("$Wood \\, density \\, \\[g.cm^{-3}\\]$"),ylab="Frequency",main='')
-   box()
-   abline(v=pft.brks,lty=2,lwd=2,col='red')
-   abline(v=c(0.53,0.71),lty=2,lwd=2,col='black')
-   arrows(c(0.53,0.71),c(80000,80000),c(0.45,0.6),c(80000,80000),lwd=2,lty=1,length=0.1)
-
-
-   delta_dbh=2
-   dbhs <- c(seq(1,28,delta_dbh),Inf)
-   density <- rep(0,length(dbhs)-1)
-
-   for (idbh in seq(1,length(dbhs)-1)){
-     sel = (census$pft ==17)  & (census$dbh>=dbhs[idbh]) & (census$dbh<dbhs[idbh+1])
-     density[idbh] = sum(census$n[sel]/nplots)
-   }
-
-
-   # for (ipft in c(2,3,4)){
-   #  census$height[census$pft==ipft] = sapply(census$dbh[census$pft==ipft],function(dbh) dbh2h(dbh,pft,allom,ipft))
-   # }
-   # Npatches=npatches
-   # maxH_L=maxH_T=minH_L=minH_T=matrix(NA,Npatches)
-   # for (i in seq(1,Npatches)){
-   #   h=census$height[census$plots==i]
-   #   pft=census$pft[census$plots==i]
-   #   if (any(pft==17)){
-   #     maxH_L[i]=max(h[pft==17])
-   #     minH_L[i]=min(h[pft==17])
-   #   }
-   #   if (any(pft!=17)){
-   #     maxH_T[i]=max(h[pft!=17])
-   #     minH_T[i]=min(h[pft!=17])
-   #   }
-   # }
-   #
-   # plot.new()
-   # par(mar=c(2,2,2,2),mfrow=c(1,2))
-   # plot(seq(1,Npatches),maxH_T,type='p',col='green')
-   # lines(seq(1,Npatches),maxH_L,type='p',col='blue')
-   #
-   # plot(seq(1,Npatches),minH_L,type='p',col='blue',ylim=c(0,1.1*max(minH_L)))
-   # lines(seq(1,Npatches),minH_T,type='p',col='green')
-   #
-
-   #plot(census$dbh[census$pft==17],census$height[census$pft==17]) #,xlim=c(2,10))
+   boxplot(census$dbh)
+   boxplot(census$height)
