@@ -16,9 +16,9 @@ graphics.off()
 
 #----- Paths. -----------------------------------------------------------------------------#
 here           = "/home/femeunier/Documents/ED2/R-utils"   # Current directory.
-there          = "/home/femeunier/Documents/ED2/ED/run/analy"    # Directory where analyses/history are 
+there          = "/home/femeunier/Documents/ED2/ED/run/analy"    # Directory where analyses/history are
 srcdir         = "/home/femeunier/Documents/ED2/R-utils" # Source  directory.
-outroot        = "/home/femeunier/Documents/Figures" # Directory for figures
+outroot        = "/home/femeunier/Documents/projects/Hackaton/LidarED/data/Wytham/Figures" # Directory for figures
 #------------------------------------------------------------------------------------------#
 
 
@@ -35,7 +35,7 @@ sasmonth       = 1
 
 
 #----- Name of the simulations. -----------------------------------------------------------#
-myplaces       = c("paracou")
+myplaces       = c("Wytham")
 #------------------------------------------------------------------------------------------#
 
 
@@ -44,17 +44,17 @@ myplaces       = c("paracou")
 depth          = 96                     # PNG resolution, in pixels per inch
 paper          = "letter"               # Paper size, to define the plot shape
 ptsz           = 14                     # Font size.
-ibackground    = mybackground           # Background settings (check load_everything.r)
+ibackground    = 0           # Background settings (check load_everything.r)
 #------------------------------------------------------------------------------------------#
 
 
 #------ Miscellaneous settings. -----------------------------------------------------------#
 slz.min        = -5.0         # The deepest depth that trees access water.
-idbh.type      = myidbhtype   # Type of DBH class
+idbh.type      = 1   # Type of DBH class
                               # 1 -- Every 10 cm until 100cm; > 100cm
                               # 2 -- 0-10; 10-20; 20-35; 35-50; 50-70; > 70 (cm)
                               # 3 -- 0-10; 10-35; 35-70; > 70 (cm)
-klight         = myklight     # Weighting factor for maximum carbon balance
+klight         = 1     # Weighting factor for maximum carbon balance
 #------------------------------------------------------------------------------------------#
 
 
@@ -75,6 +75,7 @@ klight         = myklight     # Weighting factor for maximum carbon balance
 
 
 
+library(survival)
 #----- Loading some packages and scripts. -------------------------------------------------#
 source(file.path(srcdir,"load.everything.r"))
 #------------------------------------------------------------------------------------------#
@@ -113,17 +114,17 @@ for (place in myplaces){
    #----- Retrieve default information about this place and set up some variables. --------#
    thispoi = locations(where=place,here=there,yearbeg=yearbeg,yearend=yearend
                       ,monthbeg=monthbeg)
-   
+
    if (!(dir.exists(file.path(there,'analy')))){
      inpref  = file.path(there,place)
    } else {
      inpref  = thispoi$pathin
    }
-   
+
    bnpref  = basename(inpref)
    outmain = paste(outroot,place,sep="/")
    outpref = paste(outmain,"povray",sep="/")
-   lieu    = thispoi$lieu
+   lieu    = ifelse(is.na(thispoi$lieu),place,thispoi$lieu)
    iata    = thispoi$iata
    suffix  = thispoi$iata
    yeara   = thispoi$yeara
@@ -167,7 +168,7 @@ for (place in myplaces){
       cat("   - Loading previous session...","\n")
       load(ed22.rdata)
       tresume = datum$ntimes + 1
-      datum   = update.monthly( new.ntimes = ntimes 
+      datum   = update.monthly( new.ntimes = ntimes
                               , old.datum  = datum
                               , montha     = monthbeg
                               , yeara      = yeara
@@ -284,7 +285,7 @@ for (place in myplaces){
       icoco    = icoco   [keep]
       nplantco = nplantco[keep]
       dbhco    = dbhco   [keep]
-      hiteco   = hiteco   [keep]  
+      hiteco   = hiteco   [keep]
       pftco    = pftco   [keep]
       #------------------------------------------------------------------------------------#
 

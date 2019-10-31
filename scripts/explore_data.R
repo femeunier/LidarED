@@ -5,6 +5,7 @@ library(dplyr)
 library(minpack.lm)
 library(propagate)
 library(investr)
+library(LidarED)
 
 # Load data
 data.file <- "./data/Wytham_trees_summary_ED2.csv"
@@ -40,6 +41,9 @@ ggplot(data.wytham,
   xlab("DBH census (cm)") +
   ylab("DBH TLS (cm)") +
   theme_bw()
+
+ggsave(plot = last_plot(),
+       file = "./Figures/dbh.png")
 
 ##########################################################################################################
   # Tropical tree pft, might be better to use temperate:
@@ -86,6 +90,7 @@ plotFit(m0,interval="prediction",pch=1,col.pred=adjustcolor("blue", 0.5),shade=T
 lines(dbh,pmin(35,dbh2h(href,b1Ht,b2Ht,dbh)),col="red")
 
 
+
 ##########################################################################################################
 # Crown area allometries
 
@@ -112,6 +117,10 @@ ggplot() +
                 fun=function(x) dbh2ca(b1Ca,b2Ca,x),
                 linetype='solid', color = 'red',size = 1)
 
+ggsave(plot = last_plot(),
+       file = "./Figures/CA.png")
+
+
 ##########################################################################################################
 # AGB
 wood.dens  <- 0.71 # g/cm3
@@ -137,3 +146,7 @@ ggplot() +
   stat_function(data = data.frame(x=dbh), aes(x),
                 fun=function(x) 2*dbh2bd(b1Bs_small,b2Bs_small,b1Bs_large,b2Bs_large,dbh_crit,x),
                 linetype='solid', color = 'red',size = 1)
+
+ggsave(plot = last_plot(),
+       file = "./Figures/AGB.png")
+

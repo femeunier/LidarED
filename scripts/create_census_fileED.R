@@ -43,5 +43,8 @@ ggplot(data.wytham,
   theme_bw() +
   theme(legend.position = "none")
 
+ggsave(plot = last_plot(),
+       file = "./Figures/pos.png")
+
 data.wytham_fin <- data.wytham %>% dplyr::select(c(plots,tag,scientific,wood.dens,dbh_census)) %>% rename(dbh = dbh_tls)
 write.csv(data.wytham_fin,file = "./data/Wytham_census_formatted.csv")
