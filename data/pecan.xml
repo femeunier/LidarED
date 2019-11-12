@@ -23,7 +23,7 @@
     <pft>
       <name>PFT_BCI_hydro_Late</name>
       <constants>
-        <num>1</num>
+        <num>2</num>
       </constants>
       <ed2_pft_number>4</ed2_pft_number>
     </pft>
@@ -62,9 +62,9 @@
   </workflow>
   <run>
   <site>
-    <id>99000000406</id>
-    <met.start>1998-01-01 06:00:00</met.start>
-    <met.end>2008-01-01 05:00:00</met.end>
+    <id>99000000408</id>
+    <met.start>1980-01-01 06:00:00</met.start>
+    <met.end>2010-01-01 05:00:00</met.end>
   </site>
   <inputs>
   <met>
@@ -84,8 +84,8 @@
   <id>296</id>
   </veg>
   </inputs>
-  <start.date>2004/01/01</start.date>
-  <end.date>2004/12/31</end.date>
+  <start.date>1980/01/01</start.date>
+  <end.date>2010/12/31</end.date>
   </run>
   <host>
     <name>localhost</name>

@@ -87,4 +87,9 @@ if (PEcAn.utils::status.check("CONFIG") == 0){
   settings <- PEcAn.settings::read.settings(file.path(settings$outdir, 'pecan.CONFIGS.xml'))
 }
 
-
+# PEcAn.ED2::met2model.ED2("/home/carya/output/dbfiles/CRUNCEP_site_99-406",
+#                          "CRUNCEP",
+#                          "/home/carya/output/dbfiles/test",
+#                          "Wytham",
+#                          "1980/01/01",
+#                          "2010/12/31")
