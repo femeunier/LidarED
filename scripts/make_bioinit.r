@@ -21,7 +21,7 @@ gc()
 graphics.off()
 #------------------------------------------------------------------------------------------#
 
-detach("package:LidarED", unload=TRUE)
+# detach("package:LidarED", unload=TRUE)
 
 IED_INIT_MODE = 6 # ED2 input file 3 or 6
 
@@ -225,6 +225,12 @@ cat (" + Create PSS/CSS file.","\n")
    #---------------------------------------------------------------------------------------#
    #      Output data frame.                                                               #
    #---------------------------------------------------------------------------------------#
+
+  #########################################################################################
+  # Hack for pft number
+  census$pft <- 10
+  #########################################################################################
+
    outcohorts  = data.frame( time   = sprintf("%4.4i"  , rep(year.out,times=ncohorts))
                            , patch  = sprintf("0x%3.3X", census$plot   )
                            , cohort = sprintf("0x%3.3X", census$tag    )
@@ -257,6 +263,9 @@ cat (" + Create PSS/CSS file.","\n")
 
 
    npatches   = length(unique(census$plots))
+
+
+
 
    if (IED_INIT_MODE == 6){
      outpatches = list( time  = sprintf("%4.4i"  ,rep(year.out     ,times=npatches))

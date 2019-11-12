@@ -7,9 +7,17 @@
 #' @param b1Ht b1Ht (ED2)
 #' @param b2Ht b2Ht (ED2)
 #' @param dbh dbh
+#' @param is.tropical is.tropical
+#'
+dbh2h <- function(href,b1Ht,b2Ht,dbh,is.tropical = TRUE){
 
-dbh2h <- function(href,b1Ht,b2Ht,dbh){
-  return(href*(1 -exp(-b1Ht*(dbh**b2Ht))))
+  if (is.tropical){
+    h = (href*(1 -exp(-b1Ht*(dbh**b2Ht))))
+  } else {
+    h = href + b1Ht * (1 - exp(b2Ht * dbh))
+  }
+
+  return(h)
 }
 
 #' @name dbh2ca
@@ -48,6 +56,24 @@ dbh2bd <- function(b1Bs_small,b2Bs_small,b1Bs_large,b2Bs_large,dbh_crit,dbh){
   dbh2bd[dbh2bd > dbh_crit]  <- b1Bs_large / C2B * ((dbh[dbh2bd > dbh_crit])^b2Bs_large )
 
   return(dbh2bd)
+}
+
+
+#' @name dbh2agb_exp
+#' @title dbh2agb_exp
+#' @author Félicien Meunier
+#' @export
+#' @description Returns exp allometric dead Biomass
+#' @param a a
+#' @param b b
+#' @param dbh dbh
+
+
+dbh2agb_exp <- function(a,b,dbh){
+
+  AGB <- exp(a+b*log(dbh*3.141593))
+
+  return(AGB)
 }
 
 
