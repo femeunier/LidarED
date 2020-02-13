@@ -8,20 +8,23 @@ library(investr)
 library(LidarED)
 
 # Load data
-data.file <- "./data/Wytham_trees_summary_ED2.csv"
-data.wytham <- read.csv(data.file,header = TRUE)
+data.file <- "./data/Wytham_trees_summary_ED2_nodead_add.csv"
+data.wytham <- read.csv(data.file,header = TRUE) %>% mutate(TLS_ID = as.character(TLS_ID))
 
-data.wytham <- data.wytham %>% rename(x =  stemlocx_.m.,
-                                      y =  stemlocy_.m.,
-                                      dbh_tls = DBH_TLS_.m.,
-                                      h = Hgt_pts_.m.,
-                                      CA = VerticalCrownProjectedArea_pts_.m2.,
-                                      AGV_m = Vol_QSM_avg_.m3.,
-                                      AGV_sd = Vol_QSM_sd_.m3.,
+data.file2 <- "./data/Wytham_trees_summary_ED2.csv"
+data2.wytham <- read.csv(data.file2,header = TRUE) %>% dplyr::select(TLS_ID,VerticalCrownProjectedArea_pts_.m2.,species) %>% mutate(TLS_ID = as.character(TLS_ID),
+                                                                                                                                    species = as.character(species))
+
+
+data.wytham <- data.wytham %>% left_join(data2.wytham,by = "TLS_ID")  %>% rename(x =  stemlocx_.m._x,
+                                      y =  stemlocy_.m._x,
+                                      dbh_tls = DBH_TLS_.m._x,
+                                      h = Hgt_pts_.m._x,
+                                      AGV_m = Vol_QSM_avg_.m3._x,
                                       scientific = species,
-                                      dbh_census = DBH_census_.m.) %>% mutate(dbh_tls = 100*dbh_tls,
+                                      dbh_census = DBH_census_.m._x) %>% mutate(dbh_tls = 100*dbh_tls,
                                                                               dbh_census = 100*dbh_census) %>%
-  dplyr::select(c(x,y,dbh_tls,h,CA,AGV_m,dbh_census,scientific))
+  dplyr::select(c(x,y,dbh_tls,h,AGV_m,dbh_census,scientific))
 
 extr_x <- extremum(data.wytham[["x"]])
 extr_y <- extremum(data.wytham[["y"]])
@@ -30,7 +33,7 @@ patch_Y <- 20
 
 data.wytham[["plots"]] <- patchnumber_from_position(data.wytham[["x"]],data.wytham[["y"]],patch_X,patch_Y)
 data.wytham[["tag"]]  <- 1:nrow(data.wytham)
-data.wytham[["wood.dens"]]  <- 0.6 # eventually use GWWDD
+data.wytham[["wood.dens"]]  <-  0.74 # eventually use GWWDD
 
 
 ggplot(data.wytham,
@@ -46,5 +49,5 @@ ggplot(data.wytham,
 ggsave(plot = last_plot(),
        file = "./Figures/pos.png")
 
-data.wytham_fin <- data.wytham %>% dplyr::select(c(plots,tag,scientific,wood.dens,dbh_census)) %>% rename(dbh = dbh_tls)
+data.wytham_fin <- data.wytham %>% dplyr::select(c(plots,tag,scientific,wood.dens,dbh_tls)) %>% rename(dbh = dbh_tls)
 write.csv(data.wytham_fin,file = "./data/Wytham_census_formatted.csv")

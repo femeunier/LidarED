@@ -10,19 +10,27 @@ library(stringr)
 library(purrr)
 library(reshape2)
 
-# Load data
-data.file <- "./data/Wytham_trees_summary_ED2.csv"
-data.wytham <- read.csv(data.file,header = TRUE)
+############################################################################
+# Final outputs
+ED2_config_params <- list()
 
-data.wytham <- data.wytham %>% rename(x =  stemlocx_.m.,
-                                      y =  stemlocy_.m.,
-                                      dbh_tls = DBH_TLS_.m.,
-                                      h = Hgt_pts_.m.,
-                                      CA = VerticalCrownProjectedArea_pts_.m2.,
-                                      AGV_m = Vol_QSM_avg_.m3.,
-                                      AGV_sd = Vol_QSM_sd_.m3.,
-                                      dbh_census = DBH_census_.m.) %>% mutate(dbh_tls = 100*dbh_tls,
-                                                                              dbh_census = 100*dbh_census)
+# Load data
+data.file <- "./data/Wytham_trees_summary_ED2_nodead_add.csv"
+data.wytham <- read.csv(data.file,header = TRUE) %>% mutate(TLS_ID = as.character(TLS_ID))
+
+data.file2 <- "./data/Wytham_trees_summary_ED2.csv"
+data2.wytham <- read.csv(data.file2,header = TRUE) %>% dplyr::select(TLS_ID,VerticalCrownProjectedArea_pts_.m2.,species) %>% mutate(TLS_ID = as.character(TLS_ID),
+                                                                                                                                    species = as.character(species))
+data.wytham <- data.wytham %>% left_join(data2.wytham,by = "TLS_ID") %>%
+  rename(x =  stemlocx_.m._x,
+         y =  stemlocy_.m._x,
+         dbh_tls = DBH_TLS_.m._x,
+         h = Hgt_pts_.m._x,
+         AGV_m = Vol_QSM_avg_.m3._x,
+         dbh_census = DBH_census_.m._x,
+         CA = VerticalCrownProjectedArea_pts_.m2.,
+         LA = leaf_area) %>% mutate(dbh_tls = 100*dbh_tls,
+                                    dbh_census = 100*dbh_census)
 
 ##########################################################################################################
 # census plot
@@ -33,6 +41,10 @@ ggplot(data.wytham,
   xlab("x (m)") +
   ylab("y (m)") +
   theme_bw()
+
+ggsave(plot = last_plot(),
+       file = "./Figures/census.png")
+
 
 ##########################################################################################################
 # census vs lidar dbh plot
@@ -74,6 +86,7 @@ pftnum = 10
   # !---------------------------------------------------------------------------------------!
 ##########################################################################################################
 # ED2 default allometric equations vs data
+# Height
 
 df <- data.wytham %>% filter(!is.na(dbh_tls) & !is.na(h))
 
@@ -90,12 +103,49 @@ m0 <- nlsLM(data = df,
             start=list(href=href, b1Ht=b1Ht, b2Ht = b2Ht), control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
                                                                         printEval = TRUE, warnOnly = TRUE))
 
+m1 <- nlsLM(data = df,
+            hmean ~ href + b1Ht*(1 -exp(dbh_tls*b2Ht)),
+            start=list(href=href, b1Ht=b1Ht, b2Ht = b2Ht), control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
+                                                                                 printEval = TRUE, warnOnly = TRUE))
+
+
+
 dbh_extr <- extremum(data.wytham$dbh_census)
 dbh <- seq(dbh_extr[1],dbh_extr[2],length.out = 1000)
 
-plotFit(m0,interval="prediction",pch=1,col.pred=adjustcolor("blue", 0.5),shade=T,ylim=c(0,35),col.fit = "blue",
-        xlab = "DBH TLS (cm)", ylab = 'h (m)')
-lines(dbh,pmin(hmax,dbh2h(href,b1Ht,b2Ht,dbh,isTropi)),col="red")
+png(file = "./Figures/H.png",width = 3200, height = 1600, units = "px", res = 300)
+par(mfrow = c(1,2),mar=c(5,4,4,2))
+plotFit(m0,interval="prediction",pch=1,col.pred=adjustcolor("blue", 0.5),shade=TRUE,ylim=c(0,35),col.fit = "blue",
+        xlab = "DBH TLS (cm)", ylab = 'hmax (m)')
+lines(dbh,pmin(hmax,dbh2h(href,b1Ht,b2Ht,dbh,isTropi)),col="red",lty=1,type='l')
+
+plotFit(m1,interval="prediction",pch=1,col.pred=adjustcolor("blue", 0.5),shade=TRUE,ylim=c(0,35),col.fit = "blue",
+        xlab = "DBH TLS (cm)", ylab = 'hmean (m)')
+lines(dbh,pmin(hmax,dbh2h(href,b1Ht,b2Ht,dbh,isTropi)),col="red",lty=1,type='l')
+
+dev.off()
+
+ED2_config_params[["dbh_h"]] <- split(unname(coef(m0)),c("hgt_ref", "b1Ht", "b2Ht"))
+ED2_config_params[["dbh_hmean"]] <- split(unname(coef(m1)),c("hgt_ref", "b1Ht", "b2Ht"))
+
+##########################################################################################################
+# Hmean vs Hmax
+par(mfrow = c(1,1))
+
+ggplot(data.wytham,
+       aes(x = hmean, y = h,col=species)) +
+  geom_abline(slope = 1,intercept = 0,col='black',linetype=2) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm",level = 0.99,color = 'blue',alpha = 0.5,fill = 'blue') +
+  xlab("averaged H (m)") +
+  ylab("max H (m)") +
+  scale_x_continuous(limits = c(0,max(data.wytham$h))) +
+  scale_y_continuous(limits = c(0,max(data.wytham$h))) +
+  theme_bw()
+
+LM <- lm(data = data.wytham,formula = h ~ hmean)
+ggsave(plot = last_plot(),
+       file = "./Figures/comp_H.png")
 
 ##########################################################################################################
 # Crown area allometries
@@ -104,11 +154,6 @@ df <- data.wytham %>% filter(!is.na(dbh_tls) & !is.na(CA))
 
 b1Ca <- get_ED_default_pft(history.file,"b1Ca",pftnum)
 b2Ca <- get_ED_default_pft(history.file,"b2Ca",pftnum)
-
-m0 <- nlsLM(data = df,
-            CA ~ b1Ca*(dbh_tls^b2Ca),
-            start=list(b1Ca=b1Ca, b2Ca=b2Ca), control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
-                                                                    printEval = TRUE, warnOnly = TRUE))
 
 ggplot() +
   geom_point(data = df,aes(x = dbh_tls,y = CA)) +
@@ -126,7 +171,11 @@ ggplot() +
 ggsave(plot = last_plot(),
        file = "./Figures/CA.png")
 
+LM <- lm(data = df,formula =  log(CA) ~ log(dbh_tls))
+b1Ca <- exp(coef(LM)[1])
+b2Ca <- coef(LM)[2]
 
+ED2_config_params[["dbh_CA"]] <- list(b1Ca = b1Ca, b2Ca = b2Ca)
 ##########################################################################################################
 # AGB
 wood.dens  <- get_ED_default_pft(history.file,"rho",pftnum)
@@ -161,7 +210,7 @@ df <- data.wytham %>% mutate(AGB = AGV_m*wood.dens*1000) # --> kg
 ggplot() +
   geom_point(data = df,aes(x = dbh_tls,y = AGB)) +
   theme_bw() +
-  scale_x_log10() +
+  scale_x_log10(limits = c(1,max(df$dbh_tls))) +
   scale_y_log10() +
   xlab("DBH TLS (cm)") +
   ylab("AGB (kg biomass)") +
@@ -173,6 +222,53 @@ ggplot() +
   geom_line(data = AGB_df, mapping = aes(x = dbh, y = AGB, color = as.factor(sp)))
 
 
+LM <- lm(data = df,formula =  log(AGB) ~ log(dbh_tls))
+b1Bs <- exp(coef(LM)[1])
+b2Bs <- coef(LM)[2]
+
 ggsave(plot = last_plot(),
        file = "./Figures/AGB.png")
 
+ED2_config_params[["dbh_AGB"]] <- list(b1Bs_small = b1Bs, b2Bs_small = b2Bs,
+                                       b1Bs_large = b1Bs, b2Bs_large = b2Bs)
+
+saveRDS(object = ED2_config_params,file = './data/all_configs.RDS')
+
+
+##################################################################################
+# Leaf area allometries
+
+b1Bl <- get_ED_default_pft(history.file,"b1Bl_large",pftnum)
+b2Bl <- get_ED_default_pft(history.file,"b2Bl_large",pftnum)
+SLA_ED <- get_ED_default_pft(history.file,"SLA",pftnum) # m2/kgC
+SLA <- 36.7 # From TRY m²/kgC
+SLA_biomass <- SLA/2
+
+df <- data.wytham %>% filter(!is.na(dbh_tls) & !is.na(LA)) %>% mutate(Bl = LA/SLA_biomass) # kg
+
+ggplot() +
+  geom_point(data = df,aes(x = dbh_tls,y = LA)) +
+  theme_bw() +
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("DBH TLS (cm)") +
+  ylab("Leaf area (m²)") +
+  geom_smooth(data = df,aes(x = dbh_tls,y = LA),
+              method = "lm",level = 0.99,color = 'blue',fill = 'blue',alpha = 0.5) +
+  stat_function(data = data.frame(x=dbh), aes(x),
+                fun=function(x) SLA_ED/2*b1Bl*(x**b2Bl),
+                linetype='solid', color = 'red',size = 1)
+
+ggsave(plot = last_plot(),
+       file = "./Figures/Bl.png")
+
+LM <- lm(data = df,formula =  log(Bl) ~ log(dbh_tls))
+b1Bl <- exp(coef(LM)[1])
+b2Bl <- coef(LM)[2]
+
+ED2_config_params[["dbh_Bl"]] <- list(b1Bl_small = b1Bl, b2Bl_small = b2Bl,b1Bl_large = b1Bl,b2Bl_large = b2Bl)
+
+#################################################################
+# Save
+
+saveRDS(ED2_config_params,file = "./data/all_configs.RDS")
