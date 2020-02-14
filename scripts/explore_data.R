@@ -99,16 +99,14 @@ b1Ht  <- get_ED_default_pft(history.file,"b1Ht",pftnum)
 b2Ht  <- get_ED_default_pft(history.file,"b2Ht",pftnum)
 
 m0 <- nlsLM(data = df,
-            h ~ href + b1Ht*(1 -exp(dbh_tls*b2Ht)),
+            h ~ pmin(0.99*b1Ht+href,href + b1Ht*(1 -exp(dbh_tls*b2Ht))),
             start=list(href=href, b1Ht=b1Ht, b2Ht = b2Ht), control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
                                                                         printEval = TRUE, warnOnly = TRUE))
 
 m1 <- nlsLM(data = df,
-            hmean ~ href + b1Ht*(1 -exp(dbh_tls*b2Ht)),
+            hmean ~ pmin(0.99*b1Ht+href,href + b1Ht*(1 -exp(dbh_tls*b2Ht))),
             start=list(href=href, b1Ht=b1Ht, b2Ht = b2Ht), control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
                                                                                  printEval = TRUE, warnOnly = TRUE))
-
-
 
 dbh_extr <- extremum(data.wytham$dbh_census)
 dbh <- seq(dbh_extr[1],dbh_extr[2],length.out = 1000)
@@ -125,8 +123,10 @@ lines(dbh,pmin(hmax,dbh2h(href,b1Ht,b2Ht,dbh,isTropi)),col="red",lty=1,type='l')
 
 dev.off()
 
-ED2_config_params[["dbh_h"]] <- split(unname(coef(m0)),c("hgt_ref", "b1Ht", "b2Ht"))
-ED2_config_params[["dbh_hmean"]] <- split(unname(coef(m1)),c("hgt_ref", "b1Ht", "b2Ht"))
+
+
+ED2_config_params[["dbh_h"]] <- split(c(unname(coef(m0)),unname(0.99*coef(m0)[2] + coef(m0)[1])),c("hgt_ref", "b1Ht", "b2Ht","hgt_max"))
+ED2_config_params[["dbh_hmean"]] <- split(c(unname(coef(m1)),unname(0.99*coef(m1)[2] + coef(m1)[1])),c("hgt_ref", "b1Ht", "b2Ht","hgt_max"))
 
 ##########################################################################################################
 # Hmean vs Hmax
