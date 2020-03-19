@@ -11,9 +11,10 @@ year.init <- rep(2007,2)
 
 for (isimu in seq(1,length(simulations))){
 
-  run_scenar <- file.path(main.dir,"run")
-  ed2in.file <- file.path(run_scenar,simulations[isimu],"ED2IN")
+  run_scenar <- file.path(main.dir,"run",simulations[isimu])
+  ed2in.file <- file.path(run_scenar,"ED2IN")
   ed2in.file.dest <- ed2in.file
+
   ed2in <- read_ed2in(ed2in.file)
 
   # History run
@@ -28,6 +29,9 @@ for (isimu in seq(1,length(simulations))){
   ed2in$IDATEH <- 1
   ed2in$IMONTHH <- 1
   ed2in$IYEARH <- year.init[isimu]
+
+  # write ED2IN
+  write_ed2in(ed2in,filename = ed2in.file.dest)
 
   write_job_noR(file =  file.path(run_scenar,"job.sh"),
                 nodes = 1,ppn = 18,mem = 16,walltime = 24,
