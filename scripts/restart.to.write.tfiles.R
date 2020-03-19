@@ -5,7 +5,7 @@ library(PEcAn.ED2)
 library(ED2scenarios)
 
 
-main.dir <- "/data/gent/vo/000/gvo00074/pecan/output/other_runs/Wytham/growth_storage_resp/run"
+main.dir <- "/data/gent/vo/000/gvo00074/pecan/output/other_runs/Wytham/growth_storage_resp"
 simulations <- c("near_bare_ground","near_bare_ground_resp")
 year.init <- rep(2007,2)
 
