@@ -10,7 +10,9 @@ simulations <- c("near_bare_ground","near_bare_ground_resp")
 year.init <- rep(2007,2)
 
 for (isimu in seq(1,length(simulations))){
-  ed2in.file <- file.path(main.dir,"run",simulations[isimu],"ED2IN")
+
+  run_scenar <- file.path(main.dir,"run")
+  ed2in.file <- file.path(run_scenar,simulations[isimu],"ED2IN")
   ed2in.file.dest <- ed2in.file
   ed2in <- read_ed2in(ed2in.file)
 
@@ -34,7 +36,7 @@ for (isimu in seq(1,length(simulations))){
                 ed_exec = "/user/scratchkyukon/gent/gvo000/gvo00074/felicien/ED2/ED/build/ed_2.1-opt",
                 ED2IN = "ED2IN")
 
-  setwd(file.path(main.dir,"run"))
+  setwd(run_scenar)
 
   system2("bash","job.sh")
 }
