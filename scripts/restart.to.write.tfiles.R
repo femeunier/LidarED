@@ -42,5 +42,5 @@ for (isimu in seq(1,length(simulations))){
 
   setwd(run_scenar)
 
-  system2("bash","job.sh")
+  system2("qsub","job.sh")
 }
