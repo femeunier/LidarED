@@ -12,8 +12,6 @@ year.init <- rep(2007,2)
 for (isimu in seq(1,length(simulations))){
   ed2in.file <- file.path(main.dir,"run",simulations[isimu],"ED2IN")
   ed2in.file.dest <- ed2in.file
-  ed2in.file <- "/home/carya/ED2/ED/run/ED2IN"
-  ed2in.file.dest <- "/home/carya/ED2/ED/run/ED2IN_mod"
   ed2in <- read_ed2in(ed2in.file)
 
   # History run
