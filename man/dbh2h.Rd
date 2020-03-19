@@ -4,7 +4,7 @@
 \alias{dbh2h}
 \title{dbh2h}
 \usage{
-dbh2h(href, b1Ht, b2Ht, dbh)
+dbh2h(href, b1Ht, b2Ht, dbh, is.tropical = TRUE)
 }
 \arguments{
 \item{href}{href (ED2)}
@@ -14,6 +14,8 @@ dbh2h(href, b1Ht, b2Ht, dbh)
 \item{b2Ht}{b2Ht (ED2)}
 
 \item{dbh}{dbh}
+
+\item{is.tropical}{is.tropical}
 }
 \description{
 Returns allometric h
