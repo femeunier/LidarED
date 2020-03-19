@@ -8,6 +8,7 @@ library(ED2scenarios)
 main.dir <- "/data/gent/vo/000/gvo00074/pecan/output/other_runs/Wytham/growth_storage_resp"
 simulations <- c("near_bare_ground","near_bare_ground_resp")
 year.init <- rep(2007,2)
+year.end <- rep(2012,2)
 
 for (isimu in seq(1,length(simulations))){
 
@@ -29,6 +30,9 @@ for (isimu in seq(1,length(simulations))){
   ed2in$IDATEH <- 1
   ed2in$IMONTHH <- 1
   ed2in$IYEARH <- year.init[isimu]
+
+  #FC
+  ed2in$IYEARZ <- year.end[isimu]
 
   # write ED2IN
   write_ed2in(ed2in,filename = ed2in.file.dest)
