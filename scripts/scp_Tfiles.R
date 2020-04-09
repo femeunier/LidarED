@@ -1,6 +1,6 @@
 rm(list = ls())
 
-local.dir <- "~/data/Wytham/Fluxes/"
+local.dir <- "~/R/LidarED/runs/growth_storage_resp"
 
 # remote.dir <- "/data/gent/vo/000/gvo00074/pecan/output/other_runs/Wytham/growth_resp/run"
 remote.dir <- "/data/gent/vo/000/gvo00074/pecan/output/other_runs/Wytham/growth_storage_resp/run"
@@ -13,7 +13,7 @@ all_job.file <- readLines(local.file)[seq(2,length(readLines(local.file)),2)]
 
 Ndir <- length(all_job.file)
 
-for (idir in c(5,6,7,8,26,27)){ #seq(1,Ndir)
+for (idir in seq_len(Ndir)){ #seq(1,Ndir)
 
   dir_temp <- substr(all_job.file[idir],4,nchar(all_job.file[idir]))
   dir_name <- file.path(local.dir,basename(dir_temp))
@@ -27,3 +27,13 @@ for (idir in c(5,6,7,8,26,27)){ #seq(1,Ndir)
   system2("scp",c(paste0("hpc:",file.path(dir_out,"*-T-2008*")),file.path(dir_name)))
   system2("scp",c(paste0("hpc:",file.path(dir_out,"*-T-2009*")),file.path(dir_name)))
 }
+
+system2("cp",c(file.path(local.dir,"reference/*"),file.path(local.dir,"reference_config")))
+system2("cp",c(file.path(local.dir,"reference_resp/*"),file.path(local.dir,"reference")))
+
+system2("cp",c(file.path(local.dir,"near_bare_ground/*"),file.path(local.dir,"near_bare_ground_config")))
+system2("cp",c(file.path(local.dir,"near_bare_ground_resp/*"),file.path(local.dir,"near_bare_ground")))
+
+system2("rm",c("-rf",file.path(local.dir,"reference_noconfig")))
+system2("rm",c("-rf",file.path(local.dir,"near_bare_ground_noconfig")))
+

@@ -15,7 +15,7 @@ Ndir <- length(all_job.file)
 
 for (idir in seq_len(Ndir)){#seq_len(Ndir)
   dir_temp <- substr(all_job.file[idir],4,nchar(all_job.file[idir]))
-  dir_name <- file.path(local.dir,"out",basename(dir_temp))
+  dir_name <- file.path(local.dir,basename(dir_temp))
   if(!dir.exists(dir_name)) dir.create(dir_name)
 
   print(dir_name)
@@ -28,11 +28,12 @@ for (idir in seq_len(Ndir)){#seq_len(Ndir)
 
 # rename
 
-system2("mv",c(file.path(local.dir,"out","reference"),file.path(local.dir,"out","reference_config")))
-system2("mv",c(file.path(local.dir,"out","reference_resp"),file.path(local.dir,"out","reference")))
+system2("cp",c(file.path(local.dir,"reference/*"),file.path(local.dir,"reference_config")))
+system2("cp",c(file.path(local.dir,"reference_resp/*"),file.path(local.dir,"reference")))
 
-system2("mv",c(file.path(local.dir,"out","near_bare_ground"),file.path(local.dir,"out","near_bare_ground_config")))
-system2("mv",c(file.path(local.dir,"out","near_bare_ground_resp"),file.path(local.dir,"out","near_bare_ground")))
+system2("cp",c(file.path(local.dir,"near_bare_ground/*"),file.path(local.dir,"near_bare_ground_config")))
+system2("cp",c(file.path(local.dir,"near_bare_ground_resp/*"),file.path(local.dir,"near_bare_ground")))
 
-system2("rm",c("-rf",file.path(local.dir,"out","reference_noconfig")))
-system2("rm",c("-rf",file.path(local.dir,"out","near_bare_ground_noconfig")))
+system2("rm",c("-rf",file.path(local.dir,"reference_noconfig")))
+system2("rm",c("-rf",file.path(local.dir,"near_bare_ground_noconfig")))
+

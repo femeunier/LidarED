@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 library(RColorBrewer)
 
-OP_dir <- "~/R/LidarED/runs/out"
+OP_dir <- "~/R/LidarED/runs/growth_storage_resp/"
 
 all_scenarios <- c("Hmax","Hmean","CA","AGB","Bl")
 
@@ -31,7 +31,7 @@ cmbs <-
 
 cmbs[sapply(cmbs, is.null)] <- NULL
 
-names_scenar <- c("reference_noconfig","reference")
+names_scenar <- c("reference_config","reference")
 names_scenar_all <- c(names_scenar)
 
 for (i in seq(1,length(cmbs))){
@@ -67,13 +67,13 @@ names(LAI_max2) <- names(AGB_m) <- names(LAI_peak) <- names(LAI_max) <- names(LA
 df <- data.frame(scenario = names_scenar_all,AGB_m = AGB_m,LAI_peak = LAI_peak,LAI_m = LAI_m) %>% mutate(
   Blt = case_when(
     grepl("Bl", scenario) ~ "Bl",
-    scenario == "reference_noconfig" ~ "reference_noconfig",
+    scenario == "reference_config" ~ "reference_config",
     scenario == "reference" ~ "reference",
     TRUE ~ "Other"
   ),
   AGBt = case_when(
     grepl("AGB", scenario) ~ "AGB",
-    scenario == "reference_noconfig" ~ "reference_noconfig",
+    scenario == "reference_config" ~ "reference_config",
     scenario == "reference" ~ "reference",
     TRUE ~ "Other"
   ))
@@ -84,12 +84,16 @@ ggplot(data = df %>% group_by(Blt) %>% summarise(LAI_m = mean(LAI_m)),
   geom_bar(stat = "identity") +
   scale_fill_brewer(palette = "Greens") +
   scale_color_brewer(palette = "Greens") +
-  theme_bw()
+  theme_bw() + theme(legend.position = "none") + labs(x="")
+
+ggsave(plot = last_plot(),filename = "./Figures/LAI.png",dpi=300,height = 10,width=10)
 
 ggplot(data = df %>% group_by(AGBt) %>% summarise(AGB_m = mean(AGB_m)),
        aes(x = AGBt,y = AGB_m,fill = AGBt,color = AGBt)) +
   geom_bar(stat = "identity") +
   scale_fill_brewer(palette = "YlOrBr") +
   scale_color_brewer(palette = "YlOrBr") +
-  theme_bw()
+  theme_bw() +  theme(legend.position = "none") + labs(x="")
+
+ggsave(plot = last_plot(),filename = "./Figures/AGB.png",dpi=300,height = 10,width=10)
 

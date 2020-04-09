@@ -6,7 +6,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(gridExtra)
 
-OP_dir <- "~/R/LidarED/runs/growth_storage_resp/out"
+OP_dir <- "~/R/LidarED/runs/growth_storage_resp/"
 
 all_scenarios <- c("Hmax","Hmean","CA","AGB","Bl")
 
@@ -87,68 +87,21 @@ for (i in c(seq(1,5),22,23)){ #length(cmbs)
 ###############################################################################
 # Add references
 
-# names_scenar <- c("reference","reference_noconfig","near_bare_ground","near_bare_ground_noconfig")
-names_scenar <- c("reference","reference_noconfig")
+names_scenar <- c("reference","reference_config","near_bare_ground_config")
+# names_scenar <- c("reference","reference_noconfig")
 
 for (iscenar in seq(1,length(names_scenar))){
 
   dir_output <- file.path(OP_dir,names_scenar[iscenar])
 
-  if (grepl("near_bare_ground",names_scenar[iscenar])){
-    names_scenar_all <- c(names_scenar_all,paste0(c(names_scenar[iscenar]),"_short"))
-  }
   names_scenar_all <- c(names_scenar_all,c(names_scenar[iscenar]))
 }
 
 for (iscenar in seq(1,length(names_scenar))){
 
-  dir_output <- file.path(OP_dir,names_scenar[iscenar])
+dir_output <- file.path(OP_dir,names_scenar[iscenar])
 
-  if (grepl("near_bare_ground",names_scenar[iscenar])){
-
-    load(file = file.path(dir_output,"analysis_short.RData"))
-
-    gpp <- datum$emean$gpp*1000/12/86400*1e6/365
-    sm.stress <- datum$emean$sm.stress
-    bseeds <- apply(datum$szpft$bseeds,1,sum)
-    bsapwood <- apply(datum$szpft$bsapwood,1,sum)
-    lai <- datum$emean$lai
-    agb <- datum$emean$agb
-    nep <- datum$emean$nep*1000/12/86400*1e6/365
-    reco <- datum$emean$reco*1000/12/86400*1e6/365
-    rauto <- datum$emean$plant.resp*1000/12/86400*1e6/365
-    rhetero <- datum$emean$het.resp*1000/12/86400*1e6/365
-
-    month <- datum$month
-    year <- datum$year
-
-    df_temp <- data.frame(scenar = paste0(names_scenar[iscenar],"_short"),
-                          year = year,
-                          month = month,
-                          AGBt = grepl('AGB',names_scenar[iscenar]),
-                          Blt = grepl('Bl',names_scenar[iscenar]),
-                          CAt = grepl('CA',names_scenar[iscenar]),
-                          Ht = ifelse(grepl('Hmax',names_scenar[iscenar]),"Hmax",ifelse(grepl('Hmean',names_scenar[iscenar]),"Hmean","regular")),
-                          config = !grepl('noconfig',names_scenar[iscenar]),
-                          GPP = gpp,
-                          NEP = nep,
-                          LAI = lai,
-                          Reco = reco,
-                          Rauto = rauto,
-                          bseeds = bseeds,
-                          bsapwood = bsapwood,
-                          Rhetero = rhetero,
-                          AGB = agb,
-                          sm.stress = sm.stress)
-
-    df_all <- rbind(df_all,
-                    df_temp)
-
-    load(file = file.path(dir_output,"analysis_long.RData"))
-
-  } else {
-    load(file = file.path(dir_output,"analysis.RData"))
-  }
+  load(file = file.path(dir_output,"analysis.RData"))
 
   gpp <- datum$emean$gpp*1000/12/86400*1e6/365
   sm.stress <- datum$emean$sm.stress
@@ -164,7 +117,7 @@ for (iscenar in seq(1,length(names_scenar))){
   month <- datum$month
   year <- datum$year
 
-  df_temp <- data.frame(scenar = names_scenar[iscenar],
+  df_temp <- data.frame(scenar = paste0(names_scenar[iscenar]),
                         year = year,
                         month = month,
                         AGBt = grepl('AGB',names_scenar[iscenar]),
@@ -202,9 +155,9 @@ ggplot(data = df_formatted_last,aes(x = time_yr,
   theme_bw()
 
 ggplot(data = df_formatted_last %>% filter(grepl("near_bare_ground|Hmean_CA_AGB_Bl",scenar)),aes(x = time_yr,
-                                    y = NEP,color = scenar)) +
+                                    y = GPP,color = scenar)) +
   geom_line() +
-  scale_color_brewer(palette = "Spectral") +
+  # scale_color_brewer(palette = "Spectral") +
   theme_bw()
 
 ###############################################################################
@@ -243,23 +196,28 @@ yr_fl <-
 
 yr_diff <- yr_fl %>%
   mutate(
-    GPP_diff = GPP_m - GPP_m[scenar == "reference"],
-    sm_diff = sm.stress - sm.stress[scenar == "reference"],
-    NEP_diff = NEP_m - NEP_m[scenar == "reference"],
-    AGB_diff = AGB_m - AGB_m[scenar == "reference"],
-    LAI_diff = LAI_m - LAI_m[scenar == "reference"],
-    Reco_diff = Reco_m - Reco_m[scenar == "reference"]
-  )
+    GPP_diff = GPP_m - GPP_m[scenar == "reference_config"],
+    sm_diff = sm.stress - sm.stress[scenar == "reference_config"],
+    NEP_diff = NEP_m - NEP_m[scenar == "reference_config"],
+    AGB_diff = AGB_m - AGB_m[scenar == "reference_config"],
+    LAI_diff = LAI_m - LAI_m[scenar == "reference_config"],
+    Reco_diff = Reco_m - Reco_m[scenar == "reference_config"],
+    GPP_diff_rel = (GPP_m - GPP_m[scenar == "reference_config"])/ GPP_m[scenar == "reference_config"],
+    sm_diff_rel = (sm.stress - sm.stress[scenar == "reference_config"])/sm.stress[scenar == "reference_config"],
+    NEP_diff_rel = (NEP_m - NEP_m[scenar == "reference_config"])/NEP_m[scenar == "reference_config"],
+    AGB_diff_rel = (AGB_m - AGB_m[scenar == "reference_config"])/ AGB_m[scenar == "reference_config"],
+    LAI_diff_rel = (LAI_m - LAI_m[scenar == "reference_config"])/LAI_m[scenar == "reference_config"],
+    Reco_diff_rel = (Reco_m - Reco_m[scenar == "reference_config"])/Reco_m[scenar == "reference_config"])
 
 
-A <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grepl("reference",scenar))),
+A <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grepl("reference_config",scenar) | grepl("reference",scenar))),
        aes(x = month,
            y = GPP_diff,group = scenar,color = scenar)) +
   geom_line() +
   scale_color_brewer(palette = "Spectral") +
   theme_bw() + theme(legend.position = "none")
 
-B <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grepl("reference",scenar))),
+B <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grepl("reference_config",scenar) | grepl("reference",scenar))),
             aes(x = month,
                 y = Reco_diff,group = scenar,color = scenar)) +
   geom_line() +
@@ -267,7 +225,7 @@ B <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grep
   theme_bw() + theme(legend.position = "none")
 
 
-C <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grepl("reference",scenar))),
+C <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grepl("reference_config",scenar) | grepl("reference",scenar))),
             aes(x = month,
                 y = NEP_diff,group = scenar,color = scenar)) +
   geom_line() +
@@ -275,3 +233,5 @@ C <- ggplot(data = yr_diff %>% filter(! (grepl("near_bare_ground",scenar) | grep
   theme_bw()
 
 grid.arrange(A, B, C, nrow = 1)
+
+ggsave(plot = grid.arrange(A, B, C, nrow = 1),filename = "./Figures/Fluxes.png",dpi=300,height = 7,width=15)

@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 require(Hmisc)
 
-OP_dir <- "~/R/LidarED/runs/growth_storage_resp//out"
+OP_dir <- "~/R/LidarED/runs/growth_storage_resp/"
 
 all_scenarios <- c("Hmax","Hmean","CA","AGB","Bl")
 
@@ -80,16 +80,12 @@ for (i in c(1:5,22,23)){ #length(cmbs)
 ###############################################################################
 # Add references
 
-# names_scenar <- c("reference","reference_noconfig","near_bare_ground","near_bare_ground_noconfig")
-names_scenar <- c("reference","reference_noconfig")
+names_scenar <- c("reference","reference_config","near_bare_ground_config")
 
 for (iscenar in seq(1,length(names_scenar))){
 
   dir_output <- file.path(OP_dir,names_scenar[iscenar])
 
-  if (grepl("near_bare_ground",names_scenar[iscenar])){
-    names_scenar_all <- c(names_scenar_all,paste0(c(names_scenar[iscenar]),"_short"))
-  }
   names_scenar_all <- c(names_scenar_all,c(names_scenar[iscenar]))
 }
 
@@ -97,45 +93,7 @@ for (iscenar in seq(1,length(names_scenar))){
 
   dir_output <- file.path(OP_dir,names_scenar[iscenar])
 
-  if (grepl("near_bare_ground",names_scenar[iscenar])){
-
-    load(file = file.path(dir_output,"analysis_short.RData"))
-
-    month <- datum$month
-    year <- datum$year
-    year_end <- year[length(year)]
-
-    Days_month <- monthDays(as.Date(paste0(year,'/',month,'/01')))
-    Days_year <- yearDays(as.Date(paste0(year,'/',month,'/01')))
-
-    gpp <- datum$emean$gpp*1000/Days_year*Days_month
-    nep <- datum$emean$nep*1000/Days_year*Days_month
-    reco <- datum$emean$reco*1000/Days_year*Days_month
-
-    rauto <- datum$emean$plant.resp*1000/Days_year*Days_month
-    rhetero <- datum$emean$het.resp*1000/Days_year*Days_month
-
-    df_temp <- data.frame(scenar = paste0(names_scenar[iscenar],"_short"),
-                          AGBt = grepl('AGB',names_scenar[iscenar]),
-                          Blt = grepl('Bl',names_scenar[iscenar]),
-                          CAt = grepl('CA',names_scenar[iscenar]),
-                          Ht = ifelse(grepl('Hmax',names_scenar[iscenar]),"Hmax",ifelse(grepl('Hmean',names_scenar[iscenar]),"Hmean","regular")),
-                          config = TRUE,
-                          year = year,
-                          month = month,
-                          GPP = gpp,
-                          Reco = reco,
-                          Rauto = rauto,
-                          NEP = nep)
-
-    df_all <- rbind(df_all,
-                    df_temp)
-
-    load(file = file.path(dir_output,"analysis_long.RData"))
-
-  } else {
-    load(file = file.path(dir_output,"analysis.RData"))
-  }
+  load(file = file.path(dir_output,"analysis.RData"))
 
   month <- datum$month
   year <- datum$year
@@ -175,7 +133,7 @@ df_all_filter <- df_all %>% mutate(date = as.Date(paste0(year,'/',month,'/01')))
                                                                                             date <= max(data.month$date))
 
 
-data.plot <- rbind(df_all_filter %>% filter(scenar %in% c("reference","Hmax_CA_AGB_Bl")) %>% select(month,NEP,GPP,Reco,year,scenar),
+data.plot <- rbind(df_all_filter %>% filter(scenar %in% c("reference_config","Hmax_CA_AGB_Bl")) %>% select(month,NEP,GPP,Reco,year,scenar),
                    as.data.frame(data.month %>% mutate(scenar = "data") %>% select(year,month,GPP,Reco,NEP,scenar)))
 C <- ggplot(data = data.plot,
             aes(x=month, y=NEP, fill=as.factor(year))) +
@@ -201,5 +159,5 @@ B <- ggplot(data = data.plot,
 
 grid.arrange(A, B, C, nrow = 3)
 
-
+ggsave(plot = grid.arrange(A, B, C, nrow = 3),filename = "./Figures/monthlyFluxes.png",dpi=300,height = 15,width=15)
 
