@@ -24,7 +24,7 @@ read.fluxes <- function(local.dir,years,filename = "analysis"){
   GPP <-
     unlist(map(1:length(years), function(iyear) {
       file.name <-
-        paste0("analysis-T-", years[iyear], "-00-00-000000-g01.h5")
+        paste0(filename,"-T-", years[iyear], "-00-00-000000-g01.h5")
 
       local.file <- file.path(local.dir, file.name)
 
@@ -41,7 +41,7 @@ read.fluxes <- function(local.dir,years,filename = "analysis"){
   R <-
     unlist(map(1:length(years), function(iyear) {
       file.name <-
-        paste0("analysis-T-", years[iyear], "-00-00-000000-g01.h5")
+        paste0(filename,"-T-", years[iyear], "-00-00-000000-g01.h5")
 
       local.file <- file.path(local.dir, file.name)
 
