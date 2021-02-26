@@ -16,16 +16,16 @@ graphics.off()
 
 #----- Paths. -----------------------------------------------------------------------------#
 here           = "/home/femeunier/Documents/ED2/R-utils"   # Current directory.
-there          = "/home/femeunier/Documents/ED2/ED/run/analy"    # Directory where analyses/history are
+there          = "/home/femeunier/Documents/projects/Hackaton/LidarED/Figures/allom/"    # Directory where analyses/history are
 srcdir         = "/home/femeunier/Documents/ED2/R-utils" # Source  directory.
-outroot        = "/home/femeunier/Documents/projects/Hackaton/LidarED/data/Wytham/Figures" # Directory for figures
+outroot        = "/home/femeunier/Documents/projects/Hackaton/LidarED/Figures/allom/" # Directory for figures
 #------------------------------------------------------------------------------------------#
 
 
 #----- Time options. ----------------------------------------------------------------------#
 monthbeg       = 1   # First month to use
-yearbeg        = 1500    # First year to consider
-yearend        = 1500    # Maximum year to consider
+yearbeg        = 1510    # First year to consider
+yearend        = 1510    # Maximum year to consider
 reload.data    = FALSE         # Should I reload partially loaded data?
 pov.month      = 1            # Months for POV-Ray plots
 pop.scale      = 1.0          # Scaling factor to REDUCE displayed population.

@@ -14,7 +14,7 @@ library(reshape2)
 data.file <- "./data/Wytham_trees_summary_ED2.csv"
 data.wytham <- read.csv(data.file,header = TRUE)
 
-data.wytham <- data.wytham %>% rename(x =  stemlocx_.m.,
+data.wytham <- data.wytham %>% rename(id = TLS_ID,  x =  stemlocx_.m.,
                                       y =  stemlocy_.m.,
                                       dbh_tls = DBH_TLS_.m.,
                                       h = Hgt_pts_.m.,
@@ -87,9 +87,10 @@ b2Ht  <- get_ED_default_pft(history.file,"b2Ht",pftnum)
 
 m0 <- nlsLM(data = df,
             h ~ href + b1Ht*(1 -exp(dbh_tls*b2Ht)),
-            start=list(href=href, b1Ht=b1Ht, b2Ht = b2Ht), control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
+            start=list(href=href, b1Ht=b1Ht, b2Ht = b2Ht),
+            lower=c(1.3,24,-10),
+            control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
                                                                         printEval = TRUE, warnOnly = TRUE))
-
 dbh_extr <- extremum(data.wytham$dbh_census)
 dbh <- seq(dbh_extr[1],dbh_extr[2],length.out = 1000)
 
@@ -172,7 +173,51 @@ ggplot() +
                 linetype='solid', color = 'red',size = 1) +
   geom_line(data = AGB_df, mapping = aes(x = dbh, y = AGB, color = as.factor(sp)))
 
+m0 <- nlsLM(data = df,
+            AGB ~ b1Bs*(dbh_tls^b2Bs),
+            start=list(b1Bs=b1Bs_large, b2Bs=b2Bs_large), control = nls.control(maxiter = 500, tol = 1e-05, minFactor = 1/1024/10,
+                                                                    printEval = TRUE, warnOnly = TRUE))
+
+LM<- lm(data = df,formula=log(AGB) ~ log(dbh_tls))
+c(exp(coef(LM)[1]),coef(LM)[2])
 
 ggsave(plot = last_plot(),
        file = "./Figures/AGB.png")
+
+
+###############################################################################################################
+data.file <- "./data/Wytham_nodead.csv"
+data.wytham <- read.csv(data.file,header = TRUE)
+
+data.wytham2 <- data.wytham %>% rename(id = TLS_ID,  x =  stemlocx_.m._x,
+                                      y =  stemlocy_.m._x,
+                                      dbh_tls = DBH_TLS_.m._x,
+                                      h = Hgt_pts_.m._x,
+                                      dbh_census = DBH_census_.m._x,
+                                      leaf_area = leaf_area) %>% mutate(dbh_tls = 100*dbh_tls,
+                                                                              dbh_census = 100*dbh_census)
+
+
+
+b1Bl_small <- get_ED_default_pft(history.file,"b1Bl_small",pftnum)
+b2Bl_small <- get_ED_default_pft(history.file,"b2Bl_small",pftnum)
+b1Bl_large <- get_ED_default_pft(history.file,"b1Bl_large",pftnum)
+b2Bl_large <- get_ED_default_pft(history.file,"b2Bl_large",pftnum)
+SLA <- get_ED_default_pft(history.file,"SLA",pftnum)
+
+Bl <- dbh2bl(b1Bl_small,b2Bl_small,b1Bl_large,b2Bl_large,dbh_crit,dbh) # kgC
+LA <- Bl*SLA
+
+ggplot() +
+  geom_point(data = data.wytham2,aes(x = dbh_tls,y = leaf_area)) +
+  theme_bw() +
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("DBH TLS (cm)") +
+  ylab("Leaf area (m²/plant)") +
+  geom_smooth(data = data.wytham2,aes(x = dbh_tls,y = leaf_area),
+              method = "lm",level = 0.99,color = 'blue',fill = 'blue',alpha = 0.5) +
+  stat_function(data = data.frame(x=dbh), aes(x),
+                fun=function(x) dbh2bl(b1Bl_small,b2Bl_small,b1Bl_large,b2Bl_large,dbh_crit,x)*SLA,
+                linetype='solid', color = 'red',size = 1)
 

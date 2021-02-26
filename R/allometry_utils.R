@@ -78,3 +78,32 @@ dbh2agb_exp <- function(a,b,dbh){
 
 
 
+
+#' @name dbh2bl
+#' @title dbh2bl
+#' @author Félicien Meunier
+#' @export
+#' @description Returns allometric dead Biomass
+#' @param b1Bs_small b1Bl_small (ED2)
+#' @param b2Bs_small b2Bl_small (ED2)
+#' @param b1Bs_large b1Bl_large (ED2)
+#' @param b2Bs_large b2Bl_large (ED2)
+#' @param dbh_crit dbh_crit (ED2)
+#' @param dbh dbh
+
+
+dbh2bl <- function(b1Bl_small,b2Bl_small,b1Bl_large,b2Bl_large,dbh_crit,dbh){
+
+  C2B <- 2
+
+  dbh2bl <- rep(0,length(dbh))
+  dbh2bl[dbh2bl <= dbh_crit] <- b1Bl_small / C2B  * ((dbh[dbh2bl <= dbh_crit])^b2Bl_small)
+  dbh2bl[dbh2bl > dbh_crit]  <- b1Bl_large / C2B  * ((dbh[dbh2bl > dbh_crit])^b2Bl_large )
+
+  return(dbh2bl)
+}
+
+
+
+
+

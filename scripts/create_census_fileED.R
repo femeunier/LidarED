@@ -30,7 +30,7 @@ patch_Y <- 20
 
 data.wytham[["plots"]] <- patchnumber_from_position(data.wytham[["x"]],data.wytham[["y"]],patch_X,patch_Y)
 data.wytham[["tag"]]  <- 1:nrow(data.wytham)
-data.wytham[["wood.dens"]]  <- 0.6 # eventually use GWWDD
+data.wytham[["wood.dens"]]  <- 0.74 # eventually use GWWDD
 
 
 ggplot(data.wytham,
@@ -46,5 +46,5 @@ ggplot(data.wytham,
 ggsave(plot = last_plot(),
        file = "./Figures/pos.png")
 
-data.wytham_fin <- data.wytham %>% dplyr::select(c(plots,tag,scientific,wood.dens,dbh_census)) %>% rename(dbh = dbh_tls)
+data.wytham_fin <- data.wytham %>% dplyr::select(c(plots,tag,scientific,wood.dens,dbh_census,dbh_tls)) %>% rename(dbh = dbh_tls)
 write.csv(data.wytham_fin,file = "./data/Wytham_census_formatted.csv")
