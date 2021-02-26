@@ -1,0 +1,58 @@
+
+R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> rm(list = ls())
+> 
+> local.dir <- "~/data/Wytham/Fluxes/"
+> remote.dir <- "/data/gent/vo/000/gvo00074/pecan/output/other_runs/Wytham/growth_storage_resp/run"
+> 
+> file <- file.path(remote.dir,"all_jobs.sh")
+> system2("scp",c(paste0("hpc:",file),local.dir))
+> 
+> local.file <- file.path(local.dir,"all_jobs.sh")
+> all_job.file <- readLines(local.file)[seq(2,length(readLines(local.file)),2)]
+> 
+> Ndir <- length(all_job.file)
+> 
+> for (idir in c(5,6,7,8,26,27)){ #seq(1,Ndir)
++ 
++   dir_temp <- substr(all_job.file[idir],4,nchar(all_job.file[idir]))
++   dir_name <- file.path(local.dir,basename(dir_temp))
++ 
++   print(dir_name)
++ 
++   if(!dir.exists(dir_name)) dir.create(dir_name)
++   dir_out <- file.path(dirname(dirname(dir_temp)),"out",basename(dir_temp),"analy")
++ 
++   system2("scp",c(paste0("hpc:",file.path(dir_out,"*-T-2007*")),file.path(dir_name)))
++   system2("scp",c(paste0("hpc:",file.path(dir_out,"*-T-2008*")),file.path(dir_name)))
++   system2("scp",c(paste0("hpc:",file.path(dir_out,"*-T-2009*")),file.path(dir_name)))
++ }
+[1] "~/data/Wytham/Fluxes//Hmax"
+[1] "~/data/Wytham/Fluxes//Hmean"
+[1] "~/data/Wytham/Fluxes//CA"
+[1] "~/data/Wytham/Fluxes//AGB"
+[1] "~/data/Wytham/Fluxes//Hmax_CA_AGB_Bl"
+[1] "~/data/Wytham/Fluxes//Hmean_CA_AGB_Bl"
+> 
+> proc.time()
+    user   system  elapsed 
+   8.411   73.764 2830.597 

@@ -20,6 +20,32 @@ dbh2h <- function(href,b1Ht,b2Ht,dbh,is.tropical = TRUE){
   return(h)
 }
 
+h2dbh <- function(href,b1Ht,b2Ht,h,is.tropical = TRUE){
+
+  if (is.tropical){
+    dbh =  ( log(href / ( href - h ) ) / b1Ht )** ( 1.0 / b2Ht )
+  } else {
+    h = log(1.0-(h-hgt_ref)/b1Ht)/b2Ht
+  }
+
+  return(dbh)
+}
+
+
+size2bl <- function(dbh,b1Bl_small,b2Bl_small,b1Bl_large,b2Bl_large,dbh_crit,dbh_adult){
+  ldbh = dbh_crit
+  mdbh   = pmin(dbh,ldbh)
+
+  C2B <- 2.
+
+  size2bl = b1Bl_small / C2B * mdbh ** b2Bl_small
+  size2bl[mdbh >= dbh_adult] = b1Bl_large / C2B * mdbh[mdbh >= dbh_adult] ** b2Bl_large
+
+
+  return(size2bl)
+
+}
+
 #' @name dbh2ca
 #' @title dbh2ca
 #' @author Félicien Meunier
