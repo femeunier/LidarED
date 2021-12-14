@@ -1,16 +1,12 @@
-sample.params <- function(Npft = 1,prior.file){
+sample.params <- function(Npft = 1,
+                          prior.file = "/home/femeunier/Downloads/pft-priors.csv",
+                          params.select){
 
   priors <- read.csv(prior.file) %>%
     filter(pft != "umbs.northern_pine") %>%
     mutate(pft.num = case_when(pft == "umbs.early_hardwood" ~ 9,
                                pft == "umbs.mid_hardwood" ~ 10,
                                pft == "umbs.late_hardwood" ~ 11))
-
-  params.select <- c("water_conductance","growth_resp_factor","mort2","Vcmax","leaf_respiration_rate_m2","fineroot2leaf",
-                     "clumping_factor","quantum_efficiency","leaf_reflect_nir","stomatal_slope","leaf_reflect_vis","repro_min_h")
-
-  params.select2 <- c("water_conductance","growth_resp_factor","mort2","Vm0","Rd0","q",
-                     "clumping_factor","quantum_efficiency","leaf_reflect_nir","stomatal_slope","leaf_reflect_vis","repro_min_h")
 
   priors <- priors %>%
     filter(trait %in% params.select) %>%
@@ -34,7 +30,7 @@ sample.params <- function(Npft = 1,prior.file){
 
     for (iparam in seq(1,length(params.select))){
 
-      param.name <- params.select2[iparam]
+      param.name <- params.select[iparam]
       priors.select.param <- priors.select %>% filter(trait == param.name)
 
       distn <- as.character(priors.select.param$distn)
