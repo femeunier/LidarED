@@ -3,6 +3,7 @@ sample.allom <- function(Npft = 1,
                          list.sample,
                          list.allom = c("h","CA","Bs","Bl")){
 
+  # Test
   pftnum <- c(9,10,11)
   Nsamples <- 1
 
