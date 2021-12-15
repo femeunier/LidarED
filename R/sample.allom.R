@@ -1,6 +1,7 @@
 sample.allom <- function(Npft = 1,
                          history.file = "/home/femeunier/Documents/projects/Hackaton/LidarED/data/Wytham_all.xml",
-                         list.sample){
+                         list.sample,
+                         list.allom = c("h","CA","Bs","Bl")){
 
   pftnum <- c(9,10,11)
   Nsamples <- 1
@@ -44,11 +45,12 @@ sample.allom <- function(Npft = 1,
       h.all[isample,] <- pmin(0.99*b1Ht.sample+href.sample,
                               href.sample + b1Ht.sample*(1 -exp(dbhs*b2Ht.sample)))
 
-      list.sample[[pft.name]][["hgt_ref"]] <- href.sample
-      list.sample[[pft.name]][["b1Ht"]] <- b1Ht.sample
-      list.sample[[pft.name]][["b2Ht"]] <- b2Ht.sample
-      list.sample[[pft.name]][["hgt_max"]] <- 0.99*b1Ht.sample+href.sample
-
+      if ("h" %in% list.allom){
+        list.sample[[pft.name]][["hgt_ref"]] <- href.sample
+        list.sample[[pft.name]][["b1Ht"]] <- b1Ht.sample
+        list.sample[[pft.name]][["b2Ht"]] <- b2Ht.sample
+        list.sample[[pft.name]][["hgt_max"]] <- 0.99*b1Ht.sample+href.sample
+      }
     }
 
 
@@ -90,9 +92,10 @@ sample.allom <- function(Npft = 1,
         CA.all[isample,] <- CA.sample
         isample <- isample + 1
 
-        list.sample[[pft.name]][["b1Ca"]] <- b1Ca.all
-        list.sample[[pft.name]][["b2Ca"]] <- b2Ca.all
-
+        if ("CA" %in% list.allom){
+          list.sample[[pft.name]][["b1Ca"]] <- b1Ca.all
+          list.sample[[pft.name]][["b2Ca"]] <- b2Ca.all
+        }
       }
     }
 
@@ -136,11 +139,12 @@ sample.allom <- function(Npft = 1,
         Bs.all[isample,] <- Bs.sample
         isample <- isample + 1
 
-        list.sample[[pft.name]][["b1Bs_small"]] <- b1Bs.all
-        list.sample[[pft.name]][["b2Bs_small"]] <- b2Bs.all
-        list.sample[[pft.name]][["b1Bs_large"]] <- b1Bs.all
-        list.sample[[pft.name]][["b2Bs_large"]] <- b2Bs.all
-
+        if ("Bs" %in% list.allom){
+          list.sample[[pft.name]][["b1Bs_small"]] <- b1Bs.all
+          list.sample[[pft.name]][["b2Bs_small"]] <- b2Bs.all
+          list.sample[[pft.name]][["b1Bs_large"]] <- b1Bs.all
+          list.sample[[pft.name]][["b2Bs_large"]] <- b2Bs.all
+        }
       }
     }
 
@@ -184,12 +188,12 @@ sample.allom <- function(Npft = 1,
         b2Bl.all <- c(b2Bl.all,b2Bl.sample)
         Bl.all[isample,] <- Bl.sample
         isample <- isample + 1
-
-        list.sample[[pft.name]][["b1Bl_small"]] <- b1Bl.all
-        list.sample[[pft.name]][["b2Bl_small"]] <- b2Bl.all
-        list.sample[[pft.name]][["b1Bl_large"]] <- b1Bl.all
-        list.sample[[pft.name]][["b2Bl_large"]] <- b2Bl.all
-
+        if ("Bl" %in% list.allom){
+          list.sample[[pft.name]][["b1Bl_small"]] <- b1Bl.all
+          list.sample[[pft.name]][["b2Bl_small"]] <- b2Bl.all
+          list.sample[[pft.name]][["b1Bl_large"]] <- b1Bl.all
+          list.sample[[pft.name]][["b2Bl_large"]] <- b2Bl.all
+        }
       }
     }
   }
