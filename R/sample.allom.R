@@ -47,6 +47,7 @@ sample.allom <- function(Npft = 1,
       list.sample[[pft.name]][["hgt_ref"]] <- href.sample
       list.sample[[pft.name]][["b1Ht"]] <- b1Ht.sample
       list.sample[[pft.name]][["b2Ht"]] <- b2Ht.sample
+      list.sample[[pft.name]][["hgt_max"]] <- 0.99*b1Ht.sample+href.sample
 
     }
 
