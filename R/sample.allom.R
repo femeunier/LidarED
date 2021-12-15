@@ -45,8 +45,8 @@ sample.allom <- function(Npft = 1,
                               href.sample + b1Ht.sample*(1 -exp(dbhs*b2Ht.sample)))
 
       list.sample[[pft.name]][["hgt_ref"]] <- href.sample
-      list.sample[[pft.name]][["b1Ht.sample"]] <- href.sample
-      list.sample[[pft.name]][["b2Ht.sample"]] <- href.sample
+      list.sample[[pft.name]][["b1Ht"]] <- b1Ht.sample
+      list.sample[[pft.name]][["b2Ht"]] <- b2Ht.sample
 
     }
 
