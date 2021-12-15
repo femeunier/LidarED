@@ -1,6 +1,7 @@
 sample.params <- function(Npft = 1,
-                          prior.file = "/home/femeunier/Downloads/pft-priors.csv",
-                          params.select){
+                          prior.file = "/data/gent/vo/000/gvo00074/pecan/output/other_runs/Wytham/data/pft-priors.csv",
+                          params.select = c("water_conductance","growth_resp_factor","mort2","Vm0","Rd0","q",
+                                            "clumping_factor","quantum_efficiency","leaf_reflect_nir","stomatal_slope","leaf_reflect_vis","repro_min_h")){
 
   priors <- read.csv(prior.file) %>%
     filter(pft != "umbs.northern_pine") %>%
@@ -9,12 +10,12 @@ sample.params <- function(Npft = 1,
                                pft == "umbs.late_hardwood" ~ 11))
 
   priors <- priors %>%
-    filter(trait %in% params.select) %>%
     mutate(trait = as.character(trait)) %>%
     mutate(trait = case_when(trait == "Vcmax" ~ "Vm0",
                              trait == "leaf_respiration_rate_m2" ~ "Rd0",
                              trait == "fineroot2leaf" ~ "q",
-                             TRUE ~ trait))
+                             TRUE ~ trait)) %>%
+    filter(trait %in% params.select) %>%
 
   list.sample <- list()
   delta_pft = ifelse(Npft == 1,10,9)
