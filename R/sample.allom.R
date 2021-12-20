@@ -41,7 +41,7 @@ sample.allom <- function(Npft = 1,
     for (isample in seq(1,Nsamples)){
       href.sample <- runif(n = 1,min = (1-alpha)*min(href), (1+alpha)*max(href))
       b1Ht.sample <- runif(n = 1,min = (1-alpha)*min(b1Ht), (1+alpha)*max(b1Ht))
-      b2Ht.sample <- runif(n = 1,min = (1-alpha)*min(b2Ht), (1+alpha)*max(b2Ht))
+      b2Ht.sample <- runif(n = 1,min = (1+alpha)*min(b2Ht), (1-alpha)*max(b2Ht))
 
       h.all[isample,] <- pmin(0.99*b1Ht.sample+href.sample,
                               href.sample + b1Ht.sample*(1 -exp(dbhs*b2Ht.sample)))
