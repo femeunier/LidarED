@@ -40,7 +40,7 @@ sample.params <- function(Npft = 1,
       paramb <- priors.select.param$paramb
       param.sample <- do.call(paste0("r", distn), list(1, parama, paramb))
 
-      list.sample[[pft.name]][[param.name]] <- param.sample
+      list.sample[[pft.name]][[param.name]] <- ifelse(param.name == "growth_resp_factor",min(0.6,param.sample),param.sample)
 
     }
   }
