@@ -14,7 +14,7 @@ sample.allom <- function(Npft = 1,
 
 
   dbhs <- seq(1,130,length.out = 1000)
-  alpha = 0.05
+  alpha = 0.2
   ##########################################################################################
 
   for (ipft in seq(1,Npft)){
