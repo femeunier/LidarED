@@ -1,8 +1,8 @@
 sample.allom <- function(Npft = 1,
                          history.file = "/home/femeunier/Documents/projects/Hackaton/LidarED/data/Wytham_all.xml",
                          list.sample,
-                         list.allom = c("h","CA","Bs","Bl",
-                                        alpha = 0.05)){
+                         list.allom = c("h","CA","Bs","Bl"),
+                         alpha = 0.05){
 
   # Test
   pftnum <- c(9,10,11)
