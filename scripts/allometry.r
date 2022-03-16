@@ -2,7 +2,7 @@
 #==========================================================================================#
 #       Function that converts DBH to height.                                              #
 #------------------------------------------------------------------------------------------#
-dbh2h <<- function(dbh,ipft,use.crit=TRUE){
+dbh2h <- function(dbh,ipft,use.crit=TRUE){
    #----- Make sure that the PFT variable has the same length as dbh. ---------------------#
    if (length(ipft) == 1){
      zpft = rep(ipft,times=length(dbh))
@@ -61,7 +61,7 @@ dbh2h <<- function(dbh,ipft,use.crit=TRUE){
 #==========================================================================================#
 #       Function that converts size (DBH and Height) to biomass of living tissues.         #
 #------------------------------------------------------------------------------------------#
-size2ba <<- function(dbh,hgt,ipft,use.crit=TRUE){
+size2ba <- function(dbh,hgt,ipft,use.crit=TRUE){
    #----- Make sure that the PFT variable has the same length as dbh. ---------------------#
    if (length(ipft) == 1){
      zpft = rep(ipft,times=length(dbh))
@@ -112,7 +112,7 @@ size2ba <<- function(dbh,hgt,ipft,use.crit=TRUE){
 #==========================================================================================#
 #       Function that converts size (DBH and Height) to biomass of structural tissues.     #
 #------------------------------------------------------------------------------------------#
-size2bd <<- function(dbh,hgt,ipft){
+size2bd <- function(dbh,hgt,ipft){
    #----- Make sure that the PFT variable has the same length as dbh. ---------------------#
    if (length(ipft) == 1){
      zpft = rep(ipft,times=length(dbh))
@@ -152,7 +152,7 @@ size2bd <<- function(dbh,hgt,ipft){
 #==========================================================================================#
 #       Function that converts size (DBH and Height) to individual leaf area index.        #
 #------------------------------------------------------------------------------------------#
-size2lai <<- function(dbh,hgt,nplant,ipft,use.crit=TRUE){
+size2lai <- function(dbh,hgt,nplant,ipft,use.crit=TRUE){
    #----- Make sure that the PFT variable has the same length as dbh. ---------------------#
    if (length(ipft) == 1){
      zpft = rep(ipft,times=length(dbh))

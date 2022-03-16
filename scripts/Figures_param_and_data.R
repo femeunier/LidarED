@@ -154,9 +154,9 @@ df_best <- data.frame(dbh = dbhs,
 subplotA <- ggplot(data = data.wytham.filled) +
   geom_point(aes(x = dbh_tls,y = h,color = as.factor(species))) +
   geom_line(data = df_best,
-            aes(x = dbh, y = hdefault),color = "darkgrey",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = hdefault),color = "black",linetype = 1,size = 1.5) +
   geom_line(data = df_best,
-            aes(x = dbh, y = hbest),color = "black",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = hbest),color = "darkgrey",linetype = 1,size = 1.5) +
   labs(x = "DBH (cm)",y = "Height (m)",color = "Species") +
   scale_x_log10() +
   scale_y_log10() +
@@ -206,9 +206,9 @@ subplotB <- ggplot() +
   geom_point(data = data.wytham.filled,
              aes(x = dbh_tls,y = CA,color = as.factor(species))) +
   geom_line(data = df_best_CA,
-            aes(x = dbh, y = CAbest),color = "black",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = CAbest),color = "darkgrey",linetype = 1,size = 1.5) +
   geom_line(data = df_best_CA,
-            aes(x = dbh, y = CAdefault),color = "darkgrey",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = CAdefault),color = "black",linetype = 1,size = 1.5) +
   scale_x_log10() +
   scale_y_log10() +
   xlab("DBH (cm)") +
@@ -258,9 +258,9 @@ subplotC <- ggplot() +
   scale_x_log10() +
   scale_y_log10() +
   geom_line(data = df_best_AGB,
-            aes(x = dbh, y = AGBdefault),color = "darkgrey",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = AGBdefault),color = "black",linetype = 1,size = 1.5) +
   geom_line(data = df_best_AGB,
-            aes(x = dbh, y = AGBbest),color = "black",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = AGBbest),color = "darkgrey",linetype = 1,size = 1.5) +
   xlab("DBH (cm)") +
   ylab("Aboveground Woody \n Biomass (kg)") +
   theme_bw() +
@@ -315,9 +315,9 @@ subplotD <- ggplot() +
   xlab("DBH (cm)") +
   ylab("Leaf biomass (kg)") +
   geom_line(data = df_best_LA,
-            aes(x = dbh, y = LAbest/SLA_best*2),color = "black",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = LAbest/SLA_best*2),color = "darkgrey",linetype = 1,size = 1.5) +
   geom_line(data = df_best_LA,
-            aes(x = dbh, y = LAdefault/SLA_default*2),color = "darkgrey",linetype = 1,size = 1.5) +
+            aes(x = dbh, y = LAdefault/SLA_default*2),color = "black",linetype = 1,size = 1.5) +
   # geom_smooth(data = data.wytham2,aes(x = dbh_tls,y = leaf_area),
   #             method = "lm",level = 0.99,color = 'blue',fill = 'blue',alpha = 0.5) +
   # stat_function(data = data.frame(x=dbh), aes(x),

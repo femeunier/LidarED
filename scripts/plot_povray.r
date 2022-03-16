@@ -16,7 +16,7 @@ graphics.off()
 
 #----- Paths. -----------------------------------------------------------------------------#
 here           = "/home/femeunier/Documents/ED2/R-utils"   # Current directory.
-there          = "/home/femeunier/Documents/projects/Hackaton/LidarED/Figures/allom/"    # Directory where analyses/history are
+there          = "/home/femeunier/Documents/projects/Hackaton/LidarED/outputs/"    # Directory where analyses/history are
 srcdir         = "/home/femeunier/Documents/ED2/R-utils" # Source  directory.
 outroot        = "/home/femeunier/Documents/projects/Hackaton/LidarED/Figures/allom/" # Directory for figures
 #------------------------------------------------------------------------------------------#
@@ -24,8 +24,8 @@ outroot        = "/home/femeunier/Documents/projects/Hackaton/LidarED/Figures/al
 
 #----- Time options. ----------------------------------------------------------------------#
 monthbeg       = 1   # First month to use
-yearbeg        = 1510    # First year to consider
-yearend        = 1510    # Maximum year to consider
+yearbeg        = 2007    # First year to consider
+yearend        = 2007    # Maximum year to consider
 reload.data    = FALSE         # Should I reload partially loaded data?
 pov.month      = 1            # Months for POV-Ray plots
 pop.scale      = 1.0          # Scaling factor to REDUCE displayed population.
@@ -35,13 +35,13 @@ sasmonth       = 1
 
 
 #----- Name of the simulations. -----------------------------------------------------------#
-myplaces       = c("Wytham")
+myplaces       = c("WythamPFT")
 #------------------------------------------------------------------------------------------#
 
 
 
 #----- Plot options. ----------------------------------------------------------------------#
-depth          = 96                     # PNG resolution, in pixels per inch
+depth          = 300                     # PNG resolution, in pixels per inch
 paper          = "letter"               # Paper size, to define the plot shape
 ptsz           = 14                     # Font size.
 ibackground    = 0           # Background settings (check load_everything.r)
@@ -57,8 +57,7 @@ idbh.type      = 1   # Type of DBH class
 klight         = 1     # Weighting factor for maximum carbon balance
 #------------------------------------------------------------------------------------------#
 
-
-
+#==========================================================================================#
 #==========================================================================================#
 #==========================================================================================#
 #==========================================================================================#
@@ -75,10 +74,21 @@ klight         = 1     # Weighting factor for maximum carbon balance
 
 
 
-library(survival)
 #----- Loading some packages and scripts. -------------------------------------------------#
 source(file.path(srcdir,"load.everything.r"))
 #------------------------------------------------------------------------------------------#
+
+
+pov.patch.xmax <<-   20    # Size of each sub-plot in the x direction [m]
+pov.patch.ymax <<-   20    # Size of each sub-plot in the y direction [m]
+pov.nx.patch   <<-   7    # Number of sub-plots in each x transect
+pov.ny.patch   <<-   5    # Number of sub-plots in each y transect
+pov.nxy.patch  <<- pov.nx.patch  * pov.ny.patch
+pov.total.area <<- pov.nxy.patch * pov.patch.xmax * pov.patch.ymax
+pov.x0         <<- rep( x     = -(pov.patch.xmax*pov.nx.patch)/2 + seq(from=0,to=pov.nx.patch-1) * pov.patch.xmax
+                        , each = pov.ny.patch)
+pov.y0         <<- rep( x     = -(pov.patch.ymax*pov.ny.patch)/2  + seq(from=0,to=pov.ny.patch-1) * pov.patch.ymax
+                        , times  = pov.nx.patch)
 
 
 #----- Avoid unecessary and extremely annoying beeps. -------------------------------------#
@@ -320,6 +330,7 @@ for (place in myplaces){
          #---------------------------------------------------------------------------------#
          ipa.quad    = unlist(mapply(FUN=rep,x=ipa,each=2*nquadpa))
          quad        = split(x=rep(sample(pov.nxy.patch),each=2),f=ipa.quad)
+         quad        = split(x=sort(rep(1:35,2)),f=ipa.quad)
          names(quad) = paste("patch",sprintf("%3.3i",sort(unique(ipa))),sep="_")
          #---------------------------------------------------------------------------------#
 
@@ -397,7 +408,8 @@ for (place in myplaces){
       # tings for this time.                                                               #
       #------------------------------------------------------------------------------------#
       povscript = file.path(here,place,"polygon.pov")
-      dummy     = file.copy(from=file.path(srcdir,"povray_template.pov"),to=povscript)
+      dummy     = file.copy(from="/home/femeunier/Documents/projects/Hackaton/LidarED/Figures/povray_template.pov",
+                            to=povscript)
       #------------------------------------------------------------------------------------#
 
 
@@ -426,7 +438,7 @@ for (place in myplaces){
          yt       = sprintf("%7.1f",200 - 20 * (n-1))
          povtitle = rbind( povtitle
                          ,       "//----- The header. --------------------------------//"
-                         , paste("text { ttf \"cyrvetic.ttf\" \"",lesim[n],"\" 5,0",sep="")
+                         , paste("text { ttf \"cyrvetic.ttf\" \"","","\" 5,0",sep="")
                          ,               pigment
                          ,       "       finish{ ambient 1.0 diffuse 0.0}"
                          ,       "       scale     <   12.0,   12.0,    0.1>"
@@ -440,7 +452,7 @@ for (place in myplaces){
                          )#end rbind
       }#end for (n in 1:lesim)
       povstamp = rbind(       "//----- The time stamp. ----------------------------//"
-                      , paste("text { ttf \"cyrvetic.ttf\" \"",pcwhen,"\" 5,0",sep="")
+                      , paste("text { ttf \"cyrvetic.ttf\" \"","","\" 5,0",sep="")
                       ,        pigment
                       ,       "       finish{ ambient 1.0 diffuse 0.0}"
                       ,       "       scale     <   12.0,   12.0,    0.1>"
@@ -468,6 +480,8 @@ for (place in myplaces){
       #     Call POV-Ray (must use system, though...)                                      #
       #------------------------------------------------------------------------------------#
       povray  = Sys.which("povray")
+      povray = "/usr/bin/povray"
+
       outtemp = file.path(tempdir(),paste(place,".png",sep=""))
       outfile = file.path(outpref,paste(bnpref,"-",pcout,".png",sep=""))
 

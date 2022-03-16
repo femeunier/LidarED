@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE config SYSTEM "ed.dtd">
+<config> 
+ <pft>
+  <num>10</num>
+  <is_tropical>0</is_tropical>
+  <growth_resp_factor>0.4</growth_resp_factor>
+  <storage_turnover_rate>0.16</storage_turnover_rate>
+ </pft>
+</config>

@@ -2,6 +2,11 @@ rm(list = ls())
 
 library(pracma)
 library(bigleaf)
+library(lubridate)
+library(bigleaf)
+library(cowplot)
+library(grid)
+library(gridExtra)
 
 file.fluwtower.data <- file.path(getwd(),"data","Fluxtower.csv")
 fluwtower.data <- read.csv(file.fluwtower.data)
@@ -62,7 +67,14 @@ C <- ggplot(data = df.month,
 
 grid.arrange(A, B, C, nrow = 3)
 
-saveRDS(object = df.month, file = file.path(getwd(),"data","Fluxtower_monthly.RDS"))
+df.month.flux <-
+  df.data %>% mutate(Date = date_decimal(time),
+                     month = month(Date),
+                     year = year(Date)) %>% group_by(year,month) %>% summarise(GPP = mean(GPP,na.rm=TRUE)*1e-6*12/1000*86400*365,
+                                                                               Reco = mean(Reco,na.rm=TRUE)*1e-6*12/1000*86400*365,
+                                                                               NEP = mean(NEP,na.rm=TRUE)*1e-6*12/1000*86400*365)
+
+saveRDS(object = df.month.flux, file = file.path(getwd(),"data","Fluxtower_monthly.RDS"))
 
 ##############################################################################################
 #2007-2012 rep

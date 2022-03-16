@@ -36,6 +36,8 @@ IED_INIT_MODE = 6 # ED2 input file 3 or 6
 #==========================================================================================#
 
 
+setwd("/home/femeunier/Documents/projects/Hackaton/LidarED")
+
 #------------------------------------------------------------------------------------------#
 #     Set paths.                                                                           #
 #------------------------------------------------------------------------------------------#
@@ -50,8 +52,8 @@ setwd(here)
 #     Location of interest.                                                                #
 #------------------------------------------------------------------------------------------#
 place      = "Wytham"   # Name of the site, for output directory
-census.csv = "Wytham_census_formatted.csv"  # Name of the csv file with the forest inventory data
-iata       = "Wytham"             # Tag for site (short name for output files)
+census.csv = "Wytham_census_formattedPFT.csv"  # Name of the csv file with the forest inventory data
+iata       = "WythamPFT"             # Tag for site (short name for output files)
 identity   = ""         # Unique identification (in case you have multiple tests).
 lon        = -1.34      # Longitude of the site
 lat        =  51.78     # Latitude of the site
@@ -229,6 +231,7 @@ cat (" + Create PSS/CSS file.","\n")
   #########################################################################################
   # Hack for pft number
   census$pft <- 10
+  census$pft[census$wood.dens < 0.72] <- 11
   #########################################################################################
 
    outcohorts  = data.frame( time   = sprintf("%4.4i"  , rep(year.out,times=ncohorts))
@@ -329,3 +332,5 @@ cat (" + Create PSS/CSS file.","\n")
    boxplot(census$dbh)
    boxplot(census$height)
 
+   system2("scp",paste(cssfile,"hpc:/data/gent/vo/000/gvo00074/felicien/R/LidarED/data/Wytham/"))
+   system2("scp",paste(pssfile,"hpc:/data/gent/vo/000/gvo00074/felicien/R/LidarED/data/Wytham/"))

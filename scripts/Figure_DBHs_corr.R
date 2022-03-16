@@ -89,3 +89,17 @@ ggplot(data = df.diff) +
 
 ggsave(plot = last_plot(),"./Figures/Figure_dbh.png",
        dpi = 300,width = 10,height = 8)
+
+
+ggplot(data = df.diff) +
+  geom_histogram(aes(x = 100*diff_DBH/dbh_census),alpha = 0.5) +
+  labs(x = "(TLS DBH - Census DBH)/Census DBH (%)",
+       y = "") +
+  theme_bw() +
+  theme(text = element_text(size = 16),
+        legend.position = c(0.2,0.79),
+        axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+ggsave(plot = last_plot(),"./Figures/Figure_dbh_rel.png",
+       dpi = 300,width = 10,height = 8)

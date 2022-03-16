@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE config SYSTEM "ed.dtd">
+<config>
+ 
+ <pft>
+  <num>10</num>
+  <is_tropical>0</is_tropical>
+  <b1Ht>26.1130898341277</b1Ht>
+  <b2Ht>-0.0728452694003518</b2Ht>
+  <hgt_max>22.7936289492022</hgt_max>
+  <hgt_ref>-3.05832998658426</hgt_ref>
+  <b1Ca>0.632501864641808</b1Ca>
+  <b2Ca>1.13736454860004</b2Ca>
+  <b1Bs_small>0.372374411846851</b1Bs_small>
+  <b2Bs_small>2.29553753508586</b2Bs_small>
+  <b1Bs_large>0.372374411846851</b1Bs_large>
+  <b2Bs_large>2.29553753508586</b2Bs_large>
+  <b1Bl_small>0.0683569824257226</b1Bl_small>
+  <b2Bl_small>1.46348576783538</b2Bl_small>
+  <b1Bl_large>0.0683569824257226</b1Bl_large>
+  <b2Bl_large>1.46348576783538</b2Bl_large>
+  <clumping_factor>0.5</clumping_factor>
+  <SLA>29.6</SLA>
+  <Vm0>32.85</Vm0>
+  <growth_resp_factor>0.5</growth_resp_factor>
+  <storage_turnover_rate>0.2</storage_turnover_rate>
+ </pft>
+</config>
